@@ -33,11 +33,8 @@ namespace Canard {
 class Sender {
 public:
     Sender(Interface &_interface) :
-    interface(_interface)
+    interface(_interface), priority(CANARD_TRANSFER_PRIORITY_MEDIUM), timeout(1000)
     {}
-
-    // delete copy constructor and assignment operator
-    Sender(const Sender&) = delete;
 
     inline void set_priority(uint8_t _priority) {
         priority = _priority;
@@ -75,8 +72,12 @@ protected:
         }
     }
 private:
-    uint8_t priority = CANARD_TRANSFER_PRIORITY_MEDIUM; ///< Priority of the message
-    uint32_t timeout = 1000; ///< Timeout of the message in ms
+    /// @brief delete copy constructor and assignment operator
+    Sender(const Sender&);            // Declared private and not defined
+    Sender& operator=(const Sender&); // Declared private and not defined
+
+    uint8_t priority; ///< Priority of the message
+    uint32_t timeout; ///< Timeout of the message in ms
 };
 
 template <typename msgtype>
@@ -85,9 +86,6 @@ public:
     Publisher(Interface &_interface) :
     Sender(_interface)
     {}
-
-    // delete copy constructor and assignment operator
-    Publisher(const Publisher&) = delete;
 
     /// @brief Broadcast a message
     /// @param msg message to send
@@ -116,7 +114,7 @@ public:
         );
         // send the message if encoded successfully
         if (len > 0) {
-            Transfer msg_transfer {};
+            Transfer msg_transfer;
             msg_transfer.transfer_type = CanardTransferTypeBroadcast;
             msg_transfer.data_type_id = msgtype::cxx_iface::ID;
             msg_transfer.data_type_signature = msgtype::cxx_iface::SIGNATURE;
@@ -133,6 +131,10 @@ public:
         return false;
     }
 private:
+    /// @brief delete copy constructor and assignment operator
+    Publisher(const Publisher&);            // Declared private and not defined
+    Publisher& operator=(const Publisher&); // Declared private and not defined
+
     uint8_t msg_buf[msgtype::cxx_iface::MAX_SIZE]; ///< Buffer to store the encoded message
 };
 } // namespace Canard

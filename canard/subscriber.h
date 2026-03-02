@@ -48,9 +48,6 @@ public:
         branch_head[index] = this;
     }
 
-    // delete copy constructor and assignment operator
-    Subscriber(const Subscriber&) = delete;
-
     // destructor, remove the entry from the singly-linked list
     ~Subscriber() {
         Subscriber<msgtype>* entry = branch_head[index];
@@ -58,7 +55,7 @@ public:
             branch_head[index] = next;
             return;
         }
-        while (entry != nullptr) {
+        while (entry != NULL) {
             if (entry->next == this) {
                 entry->next = next;
                 return;
@@ -69,21 +66,26 @@ public:
 
     /// @brief parse the message and call the callback
     /// @param transfer transfer object
-    void handle_message(const CanardRxTransfer& transfer) override {
-        msgtype msg {};
+    void handle_message(const CanardRxTransfer& transfer)
+    {
+        msgtype msg = msgtype();
         if (msgtype::cxx_iface::decode(&transfer, &msg)) {
             // invalid decode
             return;
         }
         // call all registered callbacks in one go
         Subscriber<msgtype>* entry = branch_head[index];
-        while (entry != nullptr) {
+        while (entry != NULL) {
             entry->cb(transfer, msg);
             entry = entry->next;
         }
     }
 
 private:
+    /// @brief delete copy constructor and assignment operator
+    Subscriber(const Subscriber&);            // Declared private and not defined
+    Subscriber& operator=(const Subscriber&); // Declared private and not defined
+
     Subscriber<msgtype>* next;
     static Subscriber<msgtype> *branch_head[CANARD_NUM_HANDLERS];
 #ifdef WITH_SEMAPHORE
@@ -93,7 +95,7 @@ private:
 };
 
 template <typename msgtype>
-Subscriber<msgtype>* Subscriber<msgtype>::branch_head[] = {nullptr};
+Subscriber<msgtype>* Subscriber<msgtype>::branch_head[] = {NULL};
 
 template <typename T, typename msgtype>
 class SubscriberArgCb {

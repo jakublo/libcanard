@@ -20,9 +20,9 @@
 namespace Canard {
 template<typename T, typename ...Args>
 T* allocate(Args...args) {
-    auto ret = CANARD_MALLOC(sizeof(T));
-    if (ret == nullptr) {
-        return nullptr;
+    void* ret = CANARD_MALLOC(sizeof(T));
+    if (ret == NULL) {
+        return NULL;
     }
     memset(ret, 0, sizeof(T));
     return new(ret) T(args...);
@@ -30,7 +30,7 @@ T* allocate(Args...args) {
 
 template<typename T>
 void deallocate(T* ptr) {
-    if (ptr == nullptr) {
+    if (ptr == NULL) {
         return;
     }
     ptr->~T();

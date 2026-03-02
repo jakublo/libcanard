@@ -20,8 +20,11 @@
  * SOFTWARE.
  *
  */
+#pragma once
 
 #include <stdint.h>
+
+#include "canard.h"
 
 namespace Canard {
 
@@ -29,7 +32,7 @@ namespace Canard {
 template <typename msgtype>
 class Callback {
 public:
-    virtual ~Callback() = default;
+    virtual ~Callback() { };
     virtual void operator()(const CanardRxTransfer& transfer, const msgtype& msg) = 0;
 };
 
@@ -42,7 +45,7 @@ public:
     /// @param _cb callback function
     StaticCallback(void (*_cb)(const CanardRxTransfer& transfer, const msgtype& msg)) : cb(_cb) {}
 
-    void operator()(const CanardRxTransfer& transfer, const msgtype& msg) override {
+    void operator()(const CanardRxTransfer& transfer, const msgtype& msg) {
         cb(transfer, msg);
     }
 private:
@@ -69,8 +72,8 @@ public:
     /// @param _cb callback member function
     ObjCallback(T* _obj, void (T::*_cb)(const CanardRxTransfer& transfer, const msgtype& msg)) : obj(_obj), cb(_cb) {}
 
-    void operator()(const CanardRxTransfer& transfer, const msgtype& msg) override {
-        if (obj != nullptr) {
+    void operator()(const CanardRxTransfer& transfer, const msgtype& msg) {
+        if (obj != NULL) {
             (obj->*cb)(transfer, msg);
         }
     }
@@ -101,7 +104,8 @@ public:
     /// @param _cb callback function
     ArgCallback(T* _arg, void (*_cb)(T* arg, const CanardRxTransfer& transfer, const msgtype& msg)) : cb(_cb), arg(_arg) {}
 
-    void operator()(const CanardRxTransfer& transfer, const msgtype& msg) override {
+    void operator()(const CanardRxTransfer& transfer, const msgtype& msg)
+    {
         cb(arg, transfer, msg);
     }
 private:

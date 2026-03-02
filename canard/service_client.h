@@ -22,6 +22,7 @@
  */
 
 #pragma once
+#include "callbacks.h"
 #include "handler_list.h"
 #include "interface.h"
 #include "publisher.h"
@@ -45,9 +46,6 @@ public:
         branch_head[index] = this;
     }
 
-    // delete copy constructor and assignment operator
-    Client(const Client&) = delete;
-
     // destructor, remove the entry from the singly-linked list
     ~Client() {
         Client<rsptype>* entry = branch_head[index];
@@ -66,7 +64,8 @@ public:
 
     /// @brief handles incoming messages
     /// @param transfer transfer object of the request
-    void handle_message(const CanardRxTransfer& transfer) override {
+    void handle_message(const CanardRxTransfer& transfer)
+    {
         rsptype msg {};
         if (rsptype::cxx_iface::rsp_decode(&transfer, &msg)) {
             // invalid decode
@@ -131,6 +130,10 @@ public:
     }
 
 private:
+    /// @brief delete copy constructor and assignment operator
+    Client(const Client&);            // Declared private and not defined
+    Client& operator=(const Client&); // Declared private and not defined
+
     static Client<rsptype>* branch_head[CANARD_NUM_HANDLERS];
     Client<rsptype>* next;
     uint8_t server_node_id;
@@ -141,6 +144,6 @@ private:
 };
 
 template <typename rsptype>
-Client<rsptype> *Client<rsptype>::branch_head[] = {nullptr};
+Client<rsptype> *Client<rsptype>::branch_head[] = {NULL};
 
 } // namespace Canard

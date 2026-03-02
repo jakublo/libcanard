@@ -27,7 +27,9 @@
 #ifndef CANARD_H
 #define CANARD_H
 
-#include <stdint.h>
+//#include "hw_types.h"
+//#include <stdint.h>
+#include "arch/stdint_custom.h"
 #include <stddef.h>
 #include <stdbool.h>
 #include <assert.h>

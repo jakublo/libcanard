@@ -43,6 +43,19 @@ struct Transfer {
     uint8_t iface_mask; ///< Bitmask of interfaces to send the transfer on
     bool canfd; ///< true if the transfer is CAN FD
     uint32_t timeout_ms; ///< timeout in ms
+
+    // Constructor to initialize members
+    Transfer()
+        : transfer_type(CanardTransferTypeBroadcast), // Default to Broadcast or any appropriate value
+          data_type_signature(0),
+          data_type_id(0),
+          inout_transfer_id(NULL),
+          priority(0),
+          payload(NULL),
+          payload_len(0),
+          iface_mask(0),
+          canfd(false),
+          timeout_ms(0) {}
 };
 
 /// @brief Interface class for Canard, its purpose is to provide a common interface for all interfaces

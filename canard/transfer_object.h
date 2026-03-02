@@ -35,21 +35,21 @@ namespace Canard {
 /// @brief list of object to retain transfer id for transfer descriptor
 class TransferObject {
 public:
-    TransferObject(uint32_t _transfer_desc) : next(nullptr), transfer_desc(_transfer_desc), tid(0) {}
+    TransferObject(uint32_t _transfer_desc) : next(NULL), transfer_desc(_transfer_desc), tid(0) {}
 
     static uint8_t* get_tid_ptr(uint8_t index, uint16_t data_type_id, CanardTransferType transfer_type, uint8_t src_node_id, uint8_t dst_node_id) NOINLINE_FUNC {
         if (index >= CANARD_NUM_HANDLERS) {
-            return nullptr;
+            return NULL;
         }
 #ifdef WITH_SEMAPHORE
         WITH_SEMAPHORE(sem[index]);
 #endif
         uint32_t _transfer_desc = MAKE_TRANSFER_DESCRIPTOR(data_type_id, transfer_type, src_node_id, dst_node_id);
         // check head
-        if (tid_map_head[index] == nullptr) {
+        if (tid_map_head[index] == NULL) {
             tid_map_head[index] = allocate<TransferObject>(_transfer_desc);
-            if (tid_map_head[index]  == nullptr) {
-                return nullptr;
+            if (tid_map_head[index]  == NULL) {
+                return NULL;
             }
             return &tid_map_head[index]->tid;
         } else if (tid_map_head[index]->transfer_desc == _transfer_desc) {
@@ -67,8 +67,8 @@ public:
 
         // create a new entry, if not found
         tid_map_ptr->next = allocate<TransferObject>(_transfer_desc);
-        if (tid_map_ptr->next == nullptr) {
-            return nullptr;
+        if (tid_map_ptr->next == NULL) {
+            return NULL;
         }
         return &tid_map_ptr->next->tid;
     }
@@ -86,7 +86,7 @@ public:
             deallocate(tid_map_ptr);
             tid_map_ptr = next;
         }
-        tid_map_head[index] = nullptr;
+        tid_map_head[index] = NULL;
     }
 private:
     static TransferObject *tid_map_head[CANARD_NUM_HANDLERS];
@@ -100,6 +100,6 @@ private:
 
 } // namespace Canard
 
-#define DEFINE_TRANSFER_OBJECT_HEADS() Canard::TransferObject* Canard::TransferObject::tid_map_head[CANARD_NUM_HANDLERS] = {nullptr}
+#define DEFINE_TRANSFER_OBJECT_HEADS() Canard::TransferObject* Canard::TransferObject::tid_map_head[CANARD_NUM_HANDLERS] = {NULL}
 
 #define DEFINE_TRANSFER_OBJECT_SEMAPHORES() Canard::Semaphore Canard::TransferObject::sem[CANARD_NUM_HANDLERS];

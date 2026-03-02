@@ -54,3 +54,5 @@ __pycache__/
 
 # Coverage report
 coverage.info
+DSDL/
+dronecan_dsdlc/

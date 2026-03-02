@@ -56,9 +56,6 @@ public:
         transfer_type = _transfer_type;
     }
 
-    /// @brief delete copy constructor and assignment operator
-    HandlerList(const HandlerList&) = delete;
-
     // destructor, remove the entry from the singly-linked list
     virtual ~HandlerList() NOINLINE_FUNC {
 #ifdef WITH_SEMAPHORE
@@ -69,7 +66,7 @@ public:
             head[index] = next;
             return;
         }
-        while (entry != nullptr) {
+        while (entry != NULL) {
             if (entry->next == this) {
                 entry->next = next;
                 return;
@@ -89,7 +86,7 @@ public:
         WITH_SEMAPHORE(sem[index]);
 #endif
         HandlerList* entry = head[index];
-        while (entry != nullptr) {
+        while (entry != NULL) {
             if (entry->msgid == msgid) {
                 signature = entry->signature;
                 return true;
@@ -108,7 +105,7 @@ public:
         WITH_SEMAPHORE(sem[index]);
 #endif
         HandlerList* entry = head[index];
-        while (entry != nullptr) {
+        while (entry != NULL) {
             if (transfer.data_type_id == entry->msgid &&
                 entry->transfer_type == transfer.transfer_type) {
                 entry->handle_message(transfer);
@@ -127,6 +124,10 @@ protected:
     HandlerList* next;
 
 private:
+    /// @brief delete copy constructor and assignment operator
+    HandlerList(const HandlerList&);            // Declared private and not defined
+    HandlerList& operator=(const HandlerList&); // Declared private and not defined
+
     static HandlerList* head[CANARD_NUM_HANDLERS];
 #ifdef WITH_SEMAPHORE
     static Canard::Semaphore sem[CANARD_NUM_HANDLERS];

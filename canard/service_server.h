@@ -40,17 +40,21 @@ public:
     Server(Interface &_interface, Callback<reqtype> &_cb) : 
     HandlerList(CanardTransferTypeRequest, reqtype::cxx_iface::ID, reqtype::cxx_iface::SIGNATURE, _interface.get_index()),
     interface(_interface),
-    cb(_cb) {
+    cb(_cb),
+    timeout(1000),
+#if CANARD_MULTI_IFACE
+    iface_mask(CANARD_IFACE_ALL),
+#endif
+    transfer_id(0)
+    {
         // multiple servers are not allowed, so no list
     }
 
-    // delete copy constructor and assignment operator
-    Server(const Server&) = delete;
-
     /// @brief handles incoming messages
     /// @param transfer transfer object of the request
-    void handle_message(const CanardRxTransfer& transfer) override {
-        reqtype msg {};
+    void handle_message(const CanardRxTransfer& transfer)
+    {
+        reqtype msg = reqtype();
         if (reqtype::cxx_iface::req_decode(&transfer, &msg)) {
             // invalid decode
             return;
@@ -102,14 +106,18 @@ public:
     }
 
 private:
+    /// @brief delete copy constructor and assignment operator
+    Server(const Server&);            // Declared private and not defined
+    Server& operator=(const Server&); // Declared private and not defined
+
     uint8_t rsp_buf[reqtype::cxx_iface::RSP_MAX_SIZE];
     Interface &interface;
     Callback<reqtype> &cb;
 
-    uint32_t timeout = 1000;
-    uint8_t transfer_id = 0;
+    uint32_t timeout;
+    uint8_t transfer_id;
 #if CANARD_MULTI_IFACE
-    uint8_t iface_mask = CANARD_IFACE_ALL;
+    uint8_t iface_mask;
 #endif
 };
 
